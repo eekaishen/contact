@@ -5,6 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kai | Digital Card</title>
     
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-RD06XV614X"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-RD06XV614X');
+    </script>
+
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
@@ -115,22 +125,33 @@
         <div class="grid grid-cols-4 gap-3 fade-in" style="animation-delay: 0.2s;">
             
             <!-- WhatsApp -->
-            <a href="https://api.whatsapp.com/send/?phone=639619200217&text=Hi%20Kai!" target="_blank" class="bento-card social-btn aspect-square flex items-center justify-center bg-[#E7FCEB] text-green-600 shadow-sm">
+            <a href="https://api.whatsapp.com/send/?phone=639619200217&text=Hi%20Kai!" 
+               target="_blank" 
+               onclick="gtag('event', 'click_social', {'platform': 'WhatsApp'})"
+               class="bento-card social-btn aspect-square flex items-center justify-center bg-[#E7FCEB] text-green-600 shadow-sm">
                 <i class="fa-brands fa-whatsapp text-2xl"></i>
             </a>
 
             <!-- Telegram -->
-            <a href="https://t.me/kaisalamat" target="_blank" class="bento-card social-btn aspect-square flex items-center justify-center bg-[#E0F2F1] text-sky-500 shadow-sm">
+            <a href="https://t.me/kaisalamat" 
+               target="_blank" 
+               onclick="gtag('event', 'click_social', {'platform': 'Telegram'})"
+               class="bento-card social-btn aspect-square flex items-center justify-center bg-[#E0F2F1] text-sky-500 shadow-sm">
                 <i class="fa-brands fa-telegram text-2xl"></i>
             </a>
 
             <!-- Gmail -->
-            <a href="mailto:eekaishen+githubcontact@gmail.com" class="bento-card social-btn aspect-square flex items-center justify-center bg-[#FCE8E6] text-red-500 shadow-sm">
+            <a href="mailto:eekaishen+githubcontact@gmail.com" 
+               onclick="gtag('event', 'click_social', {'platform': 'Gmail'})"
+               class="bento-card social-btn aspect-square flex items-center justify-center bg-[#FCE8E6] text-red-500 shadow-sm">
                 <i class="fa-solid fa-envelope text-xl"></i>
             </a>
 
             <!-- LinkedIn -->
-            <a href="https://www.linkedin.com/in/eekaishen/" target="_blank" class="bento-card social-btn aspect-square flex items-center justify-center bg-[#E6F0FC] text-blue-600 shadow-sm">
+            <a href="https://www.linkedin.com/in/eekaishen/" 
+               target="_blank" 
+               onclick="gtag('event', 'click_social', {'platform': 'LinkedIn'})"
+               class="bento-card social-btn aspect-square flex items-center justify-center bg-[#E6F0FC] text-blue-600 shadow-sm">
                 <i class="fa-brands fa-linkedin-in text-2xl"></i>
             </a>
 
