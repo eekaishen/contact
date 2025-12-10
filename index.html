@@ -11,9 +11,6 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- QRCode.js -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-
     <script>
         tailwind.config = {
             theme: {
@@ -27,7 +24,6 @@
                         'accent-linkedin': '#0077B5',
                     },
                     fontFamily: {
-                        // 2. Font same across, use Arial
                         'serif': ['Arial', 'sans-serif'],
                         'sans': ['Arial', 'sans-serif'],
                     },
@@ -81,31 +77,38 @@
     <!-- Mobile Container (Restricted Width) -->
     <main class="w-full max-w-sm space-y-4">
         
-        <!-- 1. QR Code Card (Now First, Full Size) -->
-        <div class="bento-card p-8 flex flex-col items-center text-center fade-in" style="animation-delay: 0.1s;">
-            <div class="bg-white p-2 rounded-xl">
-                <div id="qrcode"></div>
+        <!-- 1. QR Code Card (Static Image) -->
+        <div class="bento-card p-6 flex flex-col items-center text-center fade-in" style="animation-delay: 0.1s;">
+            <div class="bg-white p-2 rounded-xl w-full max-w-[220px]">
+                <!-- Sourced from local file 'qr.png' -->
+                <img src="qr.png" 
+                     alt="Scan to Sync" 
+                     class="w-full h-auto object-contain"
+                     onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\'text-red-500 p-4\'>qr.png not found</div>'">
             </div>
-            <p class="font-bold text-lg mt-4 mb-1">Scan to Sync</p>
+            <p class="font-bold text-lg mt-3 mb-0.5">Scan to Sync</p>
             <p class="text-gray-400 text-xs">Save contact directly to your phone.</p>
         </div>
 
-        <!-- 2. Header / Intro Card (Now Second) -->
-        <div class="bento-card p-6 flex flex-col items-center text-center fade-in" style="animation-delay: 0.15s;">
-            <!-- Profile Image Container - 3. Avatar photo bigger (w-32 h-32 instead of w-20 h-20) -->
-            <div class="w-32 h-32 rounded-full overflow-hidden border-4 border-gray-50 bg-gray-100 mb-4 shadow-sm">
-                 <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?fit=crop&w=400&h=400" 
+        <!-- 2. Header / Intro Card (Horizontal Layout) -->
+        <div class="bento-card p-5 flex flex-row items-center text-left gap-5 fade-in" style="animation-delay: 0.15s;">
+            <!-- Profile Image Container (Left) -->
+            <div class="w-28 h-28 shrink-0 rounded-full overflow-hidden border-4 border-gray-50 bg-gray-100 shadow-sm">
+                 <!-- Updated to local file 'kai.jpg' -->
+                 <img src="kai.jpg" 
                       alt="Kai" 
                       class="w-full h-full object-cover">
             </div>
             
-            <h1 class="text-3xl font-black text-gray-900 leading-tight mb-2">
-                Kai.
-            </h1>
-            <!-- 4. Content Update -->
-            <p class="text-gray-600 text-sm leading-relaxed px-2">
-                Operations & Marketing lead across SEA, China & US. Currently in licensed <span class="font-semibold text-gray-800">iGaming</span>.
-            </p>
+            <!-- Bio (Right) -->
+            <div class="flex flex-col justify-center">
+                <h1 class="text-2xl font-black text-gray-900 leading-tight mb-1">
+                    Kai.
+                </h1>
+                <p class="text-gray-600 text-xs leading-relaxed">
+                    Operations & Marketing lead across SEA, China & US. Currently in licensed <span class="font-semibold text-gray-800">iGaming</span>.
+                </p>
+            </div>
         </div>
 
         <!-- 3. Social Grid (Small Icons) -->
@@ -140,26 +143,5 @@
         <p class="text-[10px] text-gray-400 font-mono uppercase tracking-widest">© 2025 Kai. Manila.</p>
     </footer>
 
-    <script>
-        // Automatic QR Code Generation
-        (function generateQR() {
-            setTimeout(() => {
-                const qrContainer = document.getElementById("qrcode");
-                if (!qrContainer) return;
-                
-                qrContainer.innerHTML = "";
-                const qrUrl = window.location.href; 
-
-                new QRCode(qrContainer, {
-                    text: qrUrl,
-                    width: 200,  // Increased size for "Full Size" request
-                    height: 200,
-                    colorDark : "#000000",
-                    colorLight : "#ffffff",
-                    correctLevel : QRCode.CorrectLevel.M
-                });
-            }, 100);
-        })();
-    </script>
 </body>
 </html>
