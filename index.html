@@ -32,6 +32,7 @@
                         'accent-blue': '#0088cc',
                         'accent-red': '#EA4335',
                         'accent-linkedin': '#0077B5',
+                        'accent-wechat': '#07C160',
                     },
                     fontFamily: {
                         'serif': ['Arial', 'sans-serif'],
@@ -104,10 +105,11 @@
         <div class="bento-card p-5 flex flex-row items-center text-left gap-5 fade-in" style="animation-delay: 0.15s;">
             <!-- Profile Image Container (Left) -->
             <div class="w-28 h-28 shrink-0 rounded-full overflow-hidden border-4 border-gray-50 bg-gray-100 shadow-sm">
-                 <!-- Updated to local file 'kai.jpg' -->
+                 <!-- Updated to local file 'kai.jpg' with fallback -->
                  <img src="kai.jpg" 
                       alt="Kai" 
-                      class="w-full h-full object-cover">
+                      class="w-full h-full object-cover"
+                      onerror="this.src='https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?fit=crop&w=400&h=400'">
             </div>
             
             <!-- Bio (Right) -->
@@ -121,8 +123,8 @@
             </div>
         </div>
 
-        <!-- 3. Social Grid (Small Icons) -->
-        <div class="grid grid-cols-4 gap-3 fade-in" style="animation-delay: 0.2s;">
+        <!-- 3. Social Grid (Updated to 5 columns for WeChat) -->
+        <div class="grid grid-cols-5 gap-2 fade-in" style="animation-delay: 0.2s;">
             
             <!-- WhatsApp -->
             <a href="https://api.whatsapp.com/send/?phone=639619200217&text=Hi%20Kai!" 
@@ -139,6 +141,16 @@
                class="bento-card social-btn aspect-square flex items-center justify-center bg-[#E0F2F1] text-sky-500 shadow-sm">
                 <i class="fa-brands fa-telegram text-2xl"></i>
             </a>
+
+            <!-- WeChat (Click to Copy) -->
+            <button onclick="copyWeChat(this)" 
+                    class="bento-card social-btn aspect-square flex items-center justify-center bg-[#F2FBF4] text-[#07C160] shadow-sm relative group cursor-pointer">
+                <i class="fa-brands fa-weixin text-2xl"></i>
+                <!-- Tooltip -->
+                <span class="tooltip absolute -top-8 left-1/2 -translate-x-1/2 bg-black/80 text-white text-[10px] px-2 py-1 rounded opacity-0 transition-opacity pointer-events-none whitespace-nowrap">
+                    ID Copied!
+                </span>
+            </button>
 
             <!-- Gmail -->
             <a href="mailto:eekaishen+githubcontact@gmail.com" 
@@ -164,5 +176,24 @@
         <p class="text-[10px] text-gray-400 font-mono uppercase tracking-widest">© 2025 Kai. Manila.</p>
     </footer>
 
+    <script>
+        function copyWeChat(btn) {
+            // 1. Copy to clipboard
+            navigator.clipboard.writeText('kai_ykx');
+            
+            // 2. Track Event
+            gtag('event', 'click_social', {'platform': 'WeChat'});
+            
+            // 3. Show Tooltip
+            const tooltip = btn.querySelector('.tooltip');
+            tooltip.classList.remove('opacity-0');
+            setTimeout(() => {
+                tooltip.classList.add('opacity-0');
+            }, 2000);
+        }
+    </script>
+
 </body>
 </html>
+
+
