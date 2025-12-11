@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Kai | Digital Card</title>
     
     <!-- Google tag (gtag.js) -->
@@ -27,7 +27,7 @@
                 extend: {
                     colors: {
                         'canvas': '#F9F8F4', 
-                        'card-white': '#FFFFFF',
+                        'card-white': 'rgba(255, 255, 255, 0.85)',
                         'accent-green': '#25D366',
                         'accent-blue': '#0088cc',
                         'accent-red': '#EA4335',
@@ -40,6 +40,37 @@
                     },
                     borderRadius: {
                         'bento': '1.5rem',
+                    },
+                    transitionTimingFunction: {
+                        'spring': 'cubic-bezier(0.175, 0.885, 0.32, 1.1)', /* Smooth spring effect */
+                    },
+                    animation: {
+                        'fade-up': 'fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+                        'float': 'float 6s ease-in-out infinite',
+                        'jingle': 'jingle 0.4s cubic-bezier(.36,.07,.19,.97) both',
+                        'blob': 'blob 10s infinite',
+                    },
+                    keyframes: {
+                        fadeUp: {
+                            '0%': { opacity: '0', transform: 'translateY(20px) scale(0.96)' },
+                            '100%': { opacity: '1', transform: 'translateY(0) scale(1)' },
+                        },
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-6px)' },
+                        },
+                        jingle: {
+                            '10%, 90%': { transform: 'translate3d(-1px, 0, 0) rotate(-1deg)' },
+                            '20%, 80%': { transform: 'translate3d(2px, 0, 0) rotate(2deg)' },
+                            '30%, 50%, 70%': { transform: 'translate3d(-3px, 0, 0) rotate(-3deg)' },
+                            '40%, 60%': { transform: 'translate3d(3px, 0, 0) rotate(3deg)' }
+                        },
+                        blob: {
+                            '0%': { transform: 'translate(0px, 0px) scale(1)' },
+                            '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
+                            '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
+                            '100%': { transform: 'translate(0px, 0px) scale(1)' },
+                        }
                     }
                 }
             }
@@ -48,151 +79,368 @@
 
     <style>
         body {
-            background-color: #F9F8F4;
+            background: #F9F8F4;
             color: #111;
             -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+            position: relative;
         }
 
-        .fade-in {
-            animation: fadeIn 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-            opacity: 0;
-            transform: translateY(10px);
-        }
-
-        @keyframes fadeIn {
-            to { opacity: 1; transform: translateY(0); }
+        .bg-blob {
+            position: absolute;
+            filter: blur(80px);
+            z-index: 0;
+            opacity: 0.6;
+            animation: blob 10s infinite alternate;
         }
 
         .bento-card {
-            background-color: white;
+            background-color: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
             border-radius: 1.5rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px -1px rgba(0, 0, 0, 0.02);
-            transition: transform 0.2s ease;
+            box-shadow: 
+                0 4px 6px -1px rgba(0, 0, 0, 0.02), 
+                0 10px 15px -3px rgba(0, 0, 0, 0.04),
+                inset 0 0 0 1px rgba(255,255,255,0.5);
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease, border-color 0.3s;
+            will-change: transform;
         }
         
+        .bento-card:hover {
+            transform: translateY(-4px) scale(1.01);
+            box-shadow: 0 20px 30px -5px rgba(0, 0, 0, 0.06);
+            border-color: rgba(255, 255, 255, 0.9);
+            background-color: rgba(255, 255, 255, 0.85);
+        }
+
         .bento-card:active {
             transform: scale(0.98);
         }
 
-        .social-btn {
-            transition: all 0.2s ease;
+        .social-btn:hover i {
+            animation: jingle 0.5s ease-in-out;
         }
-        .social-btn:hover {
-            transform: translateY(-2px);
-            filter: brightness(1.05);
+
+        ::-webkit-scrollbar {
+            width: 0px;
+            background: transparent;
         }
     </style>
 </head>
-<body class="font-sans min-h-screen p-4 flex justify-center items-center">
+<body class="font-sans min-h-screen p-4 flex justify-center items-center selection:bg-gray-200 selection:text-black overflow-hidden">
 
-    <!-- Mobile Container (Restricted Width) -->
-    <main class="w-full max-w-sm space-y-4">
+    <!-- Ambient Background Elements -->
+    <div class="bg-blob w-64 h-64 bg-purple-200 rounded-full top-0 left-0 mix-blend-multiply animate-blob"></div>
+    <div class="bg-blob w-64 h-64 bg-yellow-200 rounded-full top-0 right-0 mix-blend-multiply animate-blob" style="animation-delay: 2s"></div>
+    <div class="bg-blob w-64 h-64 bg-pink-200 rounded-full -bottom-8 left-20 mix-blend-multiply animate-blob" style="animation-delay: 4s"></div>
+
+    <!-- Mobile Container -->
+    <main class="w-full max-w-sm space-y-4 relative z-10">
         
-        <!-- 1. QR Code Card (Static Image) -->
-        <div class="bento-card p-6 flex flex-col items-center text-center fade-in" style="animation-delay: 0.1s;">
-            <div class="bg-white p-2 rounded-xl w-full max-w-[220px]">
-                <!-- Sourced from local file 'qr.png' -->
+        <!-- 1. Main QR Code Card -->
+        <div class="bento-card p-6 flex flex-col items-center text-center animate-fade-up" style="animation-delay: 0.1s;">
+            <div class="bg-white/50 p-2 rounded-xl w-full max-w-[220px] backdrop-blur-sm">
                 <img src="qr.png" 
                      alt="Scan to Sync" 
-                     class="w-full h-auto object-contain"
+                     class="w-full h-auto object-contain pointer-events-none mix-blend-multiply"
                      onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\'text-red-500 p-4\'>qr.png not found</div>'">
             </div>
-            <p class="font-bold text-lg mt-3 mb-0.5">Scan to Sync</p>
-            <p class="text-gray-400 text-xs">Save contact directly to your phone.</p>
+            <p class="font-bold text-lg mt-3 mb-0.5 tracking-tight text-gray-800">Scan to Sync</p>
+            <p class="text-gray-500 text-xs font-medium">Save contact directly to your phone.</p>
         </div>
 
-        <!-- 2. Header / Intro Card (Horizontal Layout) -->
-        <div class="bento-card p-5 flex flex-row items-center text-left gap-5 fade-in" style="animation-delay: 0.15s;">
-            <!-- Profile Image Container (Left) -->
-            <div class="w-28 h-28 shrink-0 rounded-full overflow-hidden border-4 border-gray-50 bg-gray-100 shadow-sm">
-                 <!-- Updated to local file 'kai.jpg' with fallback -->
+        <!-- 2. Header / Intro Card -->
+        <div class="bento-card p-5 flex flex-row items-center text-left gap-5 animate-fade-up" style="animation-delay: 0.2s;">
+            <div class="w-28 h-28 shrink-0 rounded-full overflow-hidden border-4 border-white shadow-lg relative animate-float">
                  <img src="kai.jpg" 
                       alt="Kai" 
                       class="w-full h-full object-cover"
                       onerror="this.src='https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?fit=crop&w=400&h=400'">
             </div>
-            
-            <!-- Bio (Right) -->
             <div class="flex flex-col justify-center">
-                <h1 class="text-2xl font-black text-gray-900 leading-tight mb-1">
-                    Kai.
-                </h1>
-                <p class="text-gray-600 text-xs leading-relaxed">
+                <h1 class="text-2xl font-black text-gray-900 leading-tight mb-1 tracking-tight">Kai.</h1>
+                <p class="text-gray-600 text-xs leading-relaxed font-medium">
                     Operations & Marketing lead across SEA, China & US. Currently in licensed <span class="font-semibold text-gray-800">iGaming</span>.
                 </p>
             </div>
         </div>
 
-        <!-- 3. Social Grid (Updated to 5 columns for WeChat) -->
-        <div class="grid grid-cols-5 gap-2 fade-in" style="animation-delay: 0.2s;">
-            
-            <!-- WhatsApp -->
-            <a href="https://api.whatsapp.com/send/?phone=639619200217&text=Hi%20Kai!" 
-               target="_blank" 
-               onclick="gtag('event', 'click_social', {'platform': 'WhatsApp'})"
-               class="bento-card social-btn aspect-square flex items-center justify-center bg-[#E7FCEB] text-green-600 shadow-sm">
-                <i class="fa-brands fa-whatsapp text-2xl"></i>
-            </a>
-
-            <!-- Telegram -->
-            <a href="https://t.me/kaisalamat" 
-               target="_blank" 
-               onclick="gtag('event', 'click_social', {'platform': 'Telegram'})"
-               class="bento-card social-btn aspect-square flex items-center justify-center bg-[#E0F2F1] text-sky-500 shadow-sm">
-                <i class="fa-brands fa-telegram text-2xl"></i>
-            </a>
-
-            <!-- WeChat (Click to Copy) -->
-            <button onclick="copyWeChat(this)" 
-                    class="bento-card social-btn aspect-square flex items-center justify-center bg-[#F2FBF4] text-[#07C160] shadow-sm relative group cursor-pointer">
-                <i class="fa-brands fa-weixin text-2xl"></i>
-                <!-- Tooltip Updated -->
-                <span class="tooltip absolute -top-10 left-1/2 -translate-x-1/2 bg-black/85 text-white text-xs px-3 py-1.5 rounded-lg opacity-0 transition-opacity pointer-events-none whitespace-nowrap z-50">
-                    已复制KAI 的微信号，到微信粘贴添加好友
-                </span>
+        <!-- 3. Social Grid -->
+        <div class="grid grid-cols-5 gap-2 animate-fade-up" style="animation-delay: 0.3s;">
+            <button onclick="openModal('whatsapp')" class="bento-card social-btn aspect-square flex items-center justify-center bg-[#E7FCEB]/80 text-green-600 shadow-sm hover:ring-2 hover:ring-green-100 hover:bg-[#E7FCEB]">
+                <i class="fa-brands fa-whatsapp text-2xl transition-transform"></i>
             </button>
-
-            <!-- Gmail -->
-            <a href="mailto:eekaishen+githubcontact@gmail.com" 
-               onclick="gtag('event', 'click_social', {'platform': 'Gmail'})"
-               class="bento-card social-btn aspect-square flex items-center justify-center bg-[#FCE8E6] text-red-500 shadow-sm">
-                <i class="fa-solid fa-envelope text-xl"></i>
-            </a>
-
-            <!-- LinkedIn -->
-            <a href="https://www.linkedin.com/in/eekaishen/" 
-               target="_blank" 
-               onclick="gtag('event', 'click_social', {'platform': 'LinkedIn'})"
-               class="bento-card social-btn aspect-square flex items-center justify-center bg-[#E6F0FC] text-blue-600 shadow-sm">
-                <i class="fa-brands fa-linkedin-in text-2xl"></i>
-            </a>
-
+            <button onclick="openModal('telegram')" class="bento-card social-btn aspect-square flex items-center justify-center bg-[#E0F2F1]/80 text-sky-500 shadow-sm hover:ring-2 hover:ring-sky-100 hover:bg-[#E0F2F1]">
+                <i class="fa-brands fa-telegram text-2xl transition-transform"></i>
+            </button>
+            <button onclick="openModal('wechat')" class="bento-card social-btn aspect-square flex items-center justify-center bg-[#F2FBF4]/80 text-[#07C160] shadow-sm hover:ring-2 hover:ring-green-100 hover:bg-[#F2FBF4]">
+                <i class="fa-brands fa-weixin text-2xl transition-transform"></i>
+            </button>
+            <button onclick="openModal('gmail')" class="bento-card social-btn aspect-square flex items-center justify-center bg-[#FCE8E6]/80 text-red-500 shadow-sm hover:ring-2 hover:ring-red-100 hover:bg-[#FCE8E6]">
+                <i class="fa-solid fa-envelope text-xl transition-transform"></i>
+            </button>
+            <button onclick="openModal('linkedin')" class="bento-card social-btn aspect-square flex items-center justify-center bg-[#E6F0FC]/80 text-blue-600 shadow-sm hover:ring-2 hover:ring-blue-100 hover:bg-[#E6F0FC]">
+                <i class="fa-brands fa-linkedin-in text-2xl transition-transform"></i>
+            </button>
         </div>
 
     </main>
     
     <!-- Footer -->
-    <footer class="fixed bottom-4 left-0 w-full text-center pointer-events-none">
-        <p class="text-[10px] text-gray-400 font-mono uppercase tracking-widest">© 2025 Kai. Manila.</p>
+    <footer class="fixed bottom-4 left-0 w-full text-center pointer-events-none z-0 animate-fade-up" style="animation-delay: 0.4s;">
+        <p class="text-[10px] text-gray-400 font-mono uppercase tracking-widest opacity-60 mix-blend-multiply">© 2025 Kai. Manila.</p>
     </footer>
 
+    <!-- ACTION MODAL -->
+    <div id="action-modal-backdrop" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/40 transition-opacity duration-300 opacity-0" onclick="closeModal(event)">
+        
+        <!-- Modal Container: Updated Transition Logic -->
+        <div id="modal-container" class="bg-white/95 backdrop-blur-xl rounded-[2rem] w-[340px] shadow-2xl relative overflow-hidden transform scale-90 opacity-0 translate-y-4 border border-white/50 transition-all duration-400 ease-spring" onclick="event.stopPropagation()">
+            
+            <!-- Close Icon -->
+            <button onclick="closeModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-800 transition-colors z-20 p-2 hover:rotate-90 duration-300">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+
+            <!-- Inner Content Wrapper -->
+            <div class="p-8">
+                
+                <!-- 1. Static Header -->
+                <div class="flex flex-col items-center mb-6">
+                    <div id="modal-icon-bg" class="w-18 h-18 p-5 rounded-3xl flex items-center justify-center mb-4 text-3xl shadow-inner transition-colors duration-300 animate-float">
+                        <i id="modal-icon" class="fa-brands"></i>
+                    </div>
+                    <h3 id="modal-title" class="text-2xl font-black text-gray-900 tracking-tight">Platform</h3>
+                    <p id="modal-desc" class="text-xs font-medium text-gray-400 mt-1 uppercase tracking-wider">Select Action</p>
+                </div>
+
+                <!-- 2. Dynamic Viewport (Slide Animation) -->
+                <div class="relative overflow-hidden" id="modal-viewport">
+                    
+                    <!-- View A: Buttons -->
+                    <div id="view-buttons" class="flex flex-col gap-3 transition-transform duration-300 ease-out w-full">
+                        <!-- Buttons injected here -->
+                    </div>
+
+                    <!-- View B: QR Code -->
+                    <div id="view-qr" class="absolute top-0 left-0 w-full h-full flex flex-col items-center justify-start translate-x-full opacity-0 transition-all duration-300 ease-out pointer-events-none">
+                        <div class="bg-white p-3 rounded-2xl border border-gray-100 shadow-sm w-full aspect-square flex items-center justify-center mb-4">
+                            <img id="static-qr-img" src="" alt="QR Code" class="w-full h-full object-contain">
+                        </div>
+                        <button onclick="slideView('buttons')" class="text-gray-400 text-xs font-bold hover:text-gray-800 transition-colors flex items-center gap-2 py-2 px-4 rounded-full hover:bg-gray-50 group">
+                            <i class="fa-solid fa-arrow-left group-hover:-translate-x-1 transition-transform"></i> Back to options
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
     <script>
-        function copyWeChat(btn) {
-            // 1. Copy to clipboard
-            navigator.clipboard.writeText('kai_ykx');
+        // Data Store
+        const socials = {
+            whatsapp: {
+                name: "WhatsApp",
+                icon: "fa-whatsapp",
+                color: "text-green-600",
+                bg: "bg-[#E7FCEB]",
+                link: "https://api.whatsapp.com/send/?phone=639619200217&text=Hi%20Kai!",
+                qrImage: "waqr.png",
+                primaryLabel: "Open Chat",
+                secondaryLabel: "Scan QR",
+                type: "link_qr"
+            },
+            telegram: {
+                name: "Telegram",
+                icon: "fa-telegram",
+                color: "text-sky-500",
+                bg: "bg-[#E0F2F1]",
+                link: "https://t.me/kaisalamat",
+                qrImage: "tgqr.png",
+                primaryLabel: "Open Chat",
+                secondaryLabel: "Scan QR",
+                type: "link_qr"
+            },
+            wechat: {
+                name: "WeChat",
+                icon: "fa-weixin",
+                color: "text-[#07C160]",
+                bg: "bg-[#F2FBF4]",
+                id: "kai_ykx",
+                qrImage: "wcqr.png",
+                primaryLabel: "Copy ID",
+                secondaryLabel: "Scan QR",
+                type: "copy_qr"
+            },
+            gmail: {
+                name: "Gmail",
+                icon: "fa-envelope",
+                color: "text-red-500",
+                bg: "bg-[#FCE8E6]",
+                link: "mailto:eekaishen+githubcontact@gmail.com",
+                email: "eekaishen+githubcontact@gmail.com",
+                primaryLabel: "Send Email",
+                secondaryLabel: "Copy Email",
+                type: "mail_copy"
+            },
+            linkedin: {
+                name: "LinkedIn",
+                icon: "fa-linkedin-in",
+                color: "text-blue-600",
+                bg: "bg-[#E6F0FC]",
+                link: "https://www.linkedin.com/in/eekaishen/",
+                primaryLabel: "View Profile",
+                secondaryLabel: "Copy Link",
+                type: "link_copy"
+            }
+        };
+
+        const backdrop = document.getElementById('action-modal-backdrop');
+        const container = document.getElementById('modal-container');
+        const viewport = document.getElementById('modal-viewport');
+        const viewButtons = document.getElementById('view-buttons');
+        const viewQr = document.getElementById('view-qr');
+        const staticQrImg = document.getElementById('static-qr-img');
+        
+        let currentPlatform = null;
+
+        function openModal(platform) {
+            currentPlatform = platform;
+            const data = socials[platform];
             
-            // 2. Track Event
-            gtag('event', 'click_social', {'platform': 'WeChat'});
+            // Populate Data
+            document.getElementById('modal-title').innerText = data.name;
+            const icon = document.getElementById('modal-icon');
+            icon.className = `fa-brands ${data.icon}`;
+            if(platform === 'gmail') icon.className = `fa-solid ${data.icon}`;
             
-            // 3. Show Tooltip
-            const tooltip = btn.querySelector('.tooltip');
-            tooltip.classList.remove('opacity-0');
+            const iconBg = document.getElementById('modal-icon-bg');
+            iconBg.className = `w-18 h-18 p-5 rounded-3xl flex items-center justify-center mb-4 text-4xl shadow-sm ${data.bg} ${data.color} animate-float`;
+
+            renderButtons(data, platform);
+            slideView('buttons', false);
+
+            // Open Animation (Pure CSS Transition)
+            backdrop.classList.remove('hidden');
+            
+            // Small delay to ensure display:block is rendered before starting transition
+            requestAnimationFrame(() => {
+                backdrop.classList.remove('opacity-0');
+                container.classList.remove('scale-90', 'opacity-0', 'translate-y-4');
+                container.classList.add('scale-100', 'opacity-100', 'translate-y-0');
+            });
+
+            trackClick(platform, 'open_modal');
+        }
+
+        function renderButtons(data, platform) {
+            let html = '';
+            const btnBase = "w-full py-3.5 rounded-xl font-bold text-sm transition-all duration-200 active:scale-95 flex items-center justify-center gap-3 shadow-sm border border-transparent group";
+            const btnPrimary = `${btnBase} bg-gray-900 text-white hover:bg-gray-800 hover:shadow-md hover:-translate-y-0.5`;
+            const btnSecondary = `${btnBase} bg-white text-gray-700 border-gray-200 hover:bg-gray-50 hover:border-gray-300 hover:-translate-y-0.5`;
+
+            if (data.type === 'link_qr') {
+                html = `
+                    <a href="${data.link}" target="_blank" onclick="trackClick('${platform}', 'direct')" class="${btnPrimary}">
+                        <i class="fa-solid fa-arrow-up-right-from-square group-hover:translate-x-0.5 transition-transform"></i> ${data.primaryLabel}
+                    </a>
+                    <button onclick="prepareQr('${data.qrImage}')" class="${btnSecondary}">
+                        <i class="fa-solid fa-qrcode group-hover:rotate-12 transition-transform"></i> ${data.secondaryLabel}
+                    </button>
+                `;
+            } else if (data.type === 'copy_qr') {
+                html = `
+                    <button onclick="copyToClipboard('${data.id}', '${platform}')" class="${btnPrimary}">
+                        <i class="fa-regular fa-copy group-hover:-translate-y-0.5 transition-transform"></i> ${data.primaryLabel} <span id="copy-feedback" class="text-[10px] ml-1 opacity-0 transition-opacity text-green-400 font-normal">Copied!</span>
+                    </button>
+                    <button onclick="prepareQr('${data.qrImage}')" class="${btnSecondary}">
+                        <i class="fa-solid fa-qrcode group-hover:rotate-12 transition-transform"></i> ${data.secondaryLabel}
+                    </button>
+                `;
+            } else if (data.type === 'mail_copy') {
+                html = `
+                    <a href="${data.link}" onclick="trackClick('${platform}', 'direct')" class="${btnPrimary}">
+                        <i class="fa-solid fa-paper-plane group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform"></i> ${data.primaryLabel}
+                    </a>
+                    <button onclick="copyToClipboard('${data.email}', '${platform}')" class="${btnSecondary}">
+                        <i class="fa-regular fa-copy group-hover:-translate-y-0.5 transition-transform"></i> ${data.secondaryLabel} <span id="copy-feedback" class="text-[10px] ml-1 opacity-0 transition-opacity text-green-600 font-normal">Copied!</span>
+                    </button>
+                `;
+            } else if (data.type === 'link_copy') {
+                html = `
+                    <a href="${data.link}" target="_blank" onclick="trackClick('${platform}', 'direct')" class="${btnPrimary}">
+                        <i class="fa-brands fa-linkedin-in group-hover:scale-110 transition-transform"></i> ${data.primaryLabel}
+                    </a>
+                    <button onclick="copyToClipboard('${data.link}', '${platform}')" class="${btnSecondary}">
+                        <i class="fa-regular fa-copy group-hover:-translate-y-0.5 transition-transform"></i> ${data.secondaryLabel} <span id="copy-feedback" class="text-[10px] ml-1 opacity-0 transition-opacity text-green-600 font-normal">Copied!</span>
+                    </button>
+                `;
+            }
+            viewButtons.innerHTML = html;
+        }
+
+        function prepareQr(imgName) {
+            staticQrImg.src = imgName;
+            staticQrImg.onerror = function() {
+                this.src = "https://placehold.co/200x200?text=QR+Missing";
+            };
+            slideView('qr');
+            trackClick(currentPlatform, 'view_qr');
+        }
+
+        function slideView(viewName, animate = true) {
+            if (viewName === 'qr') {
+                viewport.style.height = '300px'; 
+                viewButtons.style.transform = 'translateX(-100%)';
+                viewButtons.style.opacity = '0';
+                viewQr.style.transform = 'translateX(0)';
+                viewQr.style.opacity = '1';
+                viewQr.style.pointerEvents = 'auto';
+            } else {
+                viewport.style.height = '110px'; 
+                viewButtons.style.transform = 'translateX(0)';
+                viewButtons.style.opacity = '1';
+                viewQr.style.transform = 'translateX(100%)';
+                viewQr.style.opacity = '0';
+                viewQr.style.pointerEvents = 'none';
+            }
+        }
+
+        function closeModal(event) {
+            if (event && event.target !== backdrop && event.target.innerText !== 'Close') return;
+
+            backdrop.classList.add('opacity-0');
+            container.classList.remove('scale-100', 'opacity-100', 'translate-y-0');
+            container.classList.add('scale-90', 'opacity-0', 'translate-y-4');
+            
             setTimeout(() => {
-                tooltip.classList.add('opacity-0');
-            }, 3000); // Increased to 3 seconds for readability
+                backdrop.classList.add('hidden');
+            }, 300);
+        }
+
+        function copyToClipboard(text, platform) {
+            navigator.clipboard.writeText(text);
+            const feedback = document.querySelector('#modal-viewport #copy-feedback');
+            if(feedback) feedback.classList.remove('opacity-0');
+            trackClick(platform, 'copy');
+            setTimeout(() => {
+                if(feedback) feedback.classList.add('opacity-0');
+            }, 2000);
+        }
+
+        function trackClick(platform, action) {
+            if(typeof gtag !== 'undefined') {
+                gtag('event', 'click_social_action', {
+                    'platform': platform,
+                    'action_type': action
+                });
+            }
         }
     </script>
-
 </body>
 </html>
 
