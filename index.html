@@ -42,7 +42,7 @@
                         'bento': '1.5rem',
                     },
                     transitionTimingFunction: {
-                        'spring': 'cubic-bezier(0.175, 0.885, 0.32, 1.1)', /* Smooth spring effect */
+                        'spring': 'cubic-bezier(0.175, 0.885, 0.32, 1.1)',
                     },
                     animation: {
                         'fade-up': 'fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards',
@@ -196,7 +196,7 @@
     <!-- ACTION MODAL -->
     <div id="action-modal-backdrop" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/40 transition-opacity duration-300 opacity-0" onclick="closeModal(event)">
         
-        <!-- Modal Container: Updated Transition Logic -->
+        <!-- Modal Container: Spring transition -->
         <div id="modal-container" class="bg-white/95 backdrop-blur-xl rounded-[2rem] w-[340px] shadow-2xl relative overflow-hidden transform scale-90 opacity-0 translate-y-4 border border-white/50 transition-all duration-400 ease-spring" onclick="event.stopPropagation()">
             
             <!-- Close Icon -->
@@ -245,6 +245,7 @@
         const socials = {
             whatsapp: {
                 name: "WhatsApp",
+                code: "wa", // Short code for analytics
                 icon: "fa-whatsapp",
                 color: "text-green-600",
                 bg: "bg-[#E7FCEB]",
@@ -256,6 +257,7 @@
             },
             telegram: {
                 name: "Telegram",
+                code: "tg",
                 icon: "fa-telegram",
                 color: "text-sky-500",
                 bg: "bg-[#E0F2F1]",
@@ -267,6 +269,7 @@
             },
             wechat: {
                 name: "WeChat",
+                code: "wc",
                 icon: "fa-weixin",
                 color: "text-[#07C160]",
                 bg: "bg-[#F2FBF4]",
@@ -278,6 +281,7 @@
             },
             gmail: {
                 name: "Gmail",
+                code: "mail",
                 icon: "fa-envelope",
                 color: "text-red-500",
                 bg: "bg-[#FCE8E6]",
@@ -289,6 +293,7 @@
             },
             linkedin: {
                 name: "LinkedIn",
+                code: "in",
                 icon: "fa-linkedin-in",
                 color: "text-blue-600",
                 bg: "bg-[#E6F0FC]",
@@ -324,17 +329,17 @@
             renderButtons(data, platform);
             slideView('buttons', false);
 
-            // Open Animation (Pure CSS Transition)
+            // Open Animation
             backdrop.classList.remove('hidden');
             
-            // Small delay to ensure display:block is rendered before starting transition
             requestAnimationFrame(() => {
                 backdrop.classList.remove('opacity-0');
                 container.classList.remove('scale-90', 'opacity-0', 'translate-y-4');
                 container.classList.add('scale-100', 'opacity-100', 'translate-y-0');
             });
 
-            trackClick(platform, 'open_modal');
+            // TRACK: Main Menu Open (e.g. wa_click)
+            trackClick(data.code, 'click');
         }
 
         function renderButtons(data, platform) {
@@ -345,37 +350,37 @@
 
             if (data.type === 'link_qr') {
                 html = `
-                    <a href="${data.link}" target="_blank" onclick="trackClick('${platform}', 'direct')" class="${btnPrimary}">
+                    <a href="${data.link}" target="_blank" onclick="trackClick('${data.code}', 'chat')" class="${btnPrimary}">
                         <i class="fa-solid fa-arrow-up-right-from-square group-hover:translate-x-0.5 transition-transform"></i> ${data.primaryLabel}
                     </a>
-                    <button onclick="prepareQr('${data.qrImage}')" class="${btnSecondary}">
+                    <button onclick="prepareQr('${data.qrImage}', '${data.code}')" class="${btnSecondary}">
                         <i class="fa-solid fa-qrcode group-hover:rotate-12 transition-transform"></i> ${data.secondaryLabel}
                     </button>
                 `;
             } else if (data.type === 'copy_qr') {
                 html = `
-                    <button onclick="copyToClipboard('${data.id}', '${platform}')" class="${btnPrimary}">
+                    <button onclick="copyToClipboard('${data.id}', '${data.code}')" class="${btnPrimary}">
                         <i class="fa-regular fa-copy group-hover:-translate-y-0.5 transition-transform"></i> ${data.primaryLabel} <span id="copy-feedback" class="text-[10px] ml-1 opacity-0 transition-opacity text-green-400 font-normal">Copied!</span>
                     </button>
-                    <button onclick="prepareQr('${data.qrImage}')" class="${btnSecondary}">
+                    <button onclick="prepareQr('${data.qrImage}', '${data.code}')" class="${btnSecondary}">
                         <i class="fa-solid fa-qrcode group-hover:rotate-12 transition-transform"></i> ${data.secondaryLabel}
                     </button>
                 `;
             } else if (data.type === 'mail_copy') {
                 html = `
-                    <a href="${data.link}" onclick="trackClick('${platform}', 'direct')" class="${btnPrimary}">
+                    <a href="${data.link}" onclick="trackClick('${data.code}', 'chat')" class="${btnPrimary}">
                         <i class="fa-solid fa-paper-plane group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform"></i> ${data.primaryLabel}
                     </a>
-                    <button onclick="copyToClipboard('${data.email}', '${platform}')" class="${btnSecondary}">
+                    <button onclick="copyToClipboard('${data.email}', '${data.code}')" class="${btnSecondary}">
                         <i class="fa-regular fa-copy group-hover:-translate-y-0.5 transition-transform"></i> ${data.secondaryLabel} <span id="copy-feedback" class="text-[10px] ml-1 opacity-0 transition-opacity text-green-600 font-normal">Copied!</span>
                     </button>
                 `;
             } else if (data.type === 'link_copy') {
                 html = `
-                    <a href="${data.link}" target="_blank" onclick="trackClick('${platform}', 'direct')" class="${btnPrimary}">
+                    <a href="${data.link}" target="_blank" onclick="trackClick('${data.code}', 'chat')" class="${btnPrimary}">
                         <i class="fa-brands fa-linkedin-in group-hover:scale-110 transition-transform"></i> ${data.primaryLabel}
                     </a>
-                    <button onclick="copyToClipboard('${data.link}', '${platform}')" class="${btnSecondary}">
+                    <button onclick="copyToClipboard('${data.link}', '${data.code}')" class="${btnSecondary}">
                         <i class="fa-regular fa-copy group-hover:-translate-y-0.5 transition-transform"></i> ${data.secondaryLabel} <span id="copy-feedback" class="text-[10px] ml-1 opacity-0 transition-opacity text-green-600 font-normal">Copied!</span>
                     </button>
                 `;
@@ -383,13 +388,13 @@
             viewButtons.innerHTML = html;
         }
 
-        function prepareQr(imgName) {
+        function prepareQr(imgName, code) {
             staticQrImg.src = imgName;
             staticQrImg.onerror = function() {
                 this.src = "https://placehold.co/200x200?text=QR+Missing";
             };
             slideView('qr');
-            trackClick(currentPlatform, 'view_qr');
+            trackClick(code, 'qr');
         }
 
         function slideView(viewName, animate = true) {
@@ -422,21 +427,24 @@
             }, 300);
         }
 
-        function copyToClipboard(text, platform) {
+        function copyToClipboard(text, code) {
             navigator.clipboard.writeText(text);
             const feedback = document.querySelector('#modal-viewport #copy-feedback');
             if(feedback) feedback.classList.remove('opacity-0');
-            trackClick(platform, 'copy');
+            trackClick(code, 'copy');
             setTimeout(() => {
                 if(feedback) feedback.classList.add('opacity-0');
             }, 2000);
         }
 
-        function trackClick(platform, action) {
+        // Updated Analytics Logic
+        // Maps platform code + action to specific event names
+        function trackClick(code, action) {
             if(typeof gtag !== 'undefined') {
-                gtag('event', 'click_social_action', {
-                    'platform': platform,
-                    'action_type': action
+                let eventName = `${code}_${action}`; // e.g., wa_click, wa_chat, wa_qr
+                gtag('event', eventName, {
+                    'platform_code': code,
+                    'action_detail': action
                 });
             }
         }
